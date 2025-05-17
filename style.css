@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+}
+
+h1 {
+    color: #333;
+}
+
+form input, form button {
+    margin: 5px;
+    padding: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+.low-stock {
+    background-color: #ffcccc; /* Light red highlight for low stock */
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: blue;
+    margin-right: 10px;
+}
+

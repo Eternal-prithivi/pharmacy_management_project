@@ -1,0 +1,149 @@
+<!-- templates/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard - Pharmacy Management</title>
+    <style>
+      /* Reset and base */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+        padding: 20px 40px;
+        color: #2c3e50;
+      }
+      header {
+        background: #1e90ff;
+        color: white;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      }
+      header h1 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.8rem;
+        letter-spacing: 1.2px;
+      }
+      nav a {
+        color: white;
+        margin-left: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 6px 12px;
+        border-radius: 6px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      nav a:hover,
+      nav a:focus {
+        background-color: #1565c0;
+        color: #e0e0e0;
+        outline: none;
+      }
+      main {
+        margin-top: 30px;
+        max-width: 1100px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .stats {
+        display: flex;
+        gap: 25px;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+      }
+      .stat {
+        flex: 1 1 200px;
+        background: #1e90ff;
+        color: white;
+        padding: 25px 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(30, 144, 255, 0.3);
+        transition: transform 0.3s ease;
+        cursor: default;
+      }
+      .stat:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 16px rgba(30, 144, 255, 0.5);
+      }
+      .stat h3 {
+        margin: 0 0 12px 0;
+        font-weight: 500;
+        font-size: 1.1rem;
+        letter-spacing: 0.05em;
+      }
+      .stat p {
+        font-size: 2rem;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+      }
+      .card {
+        background: white;
+        padding: 30px 40px;
+        border-radius: 14px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+        color: #34495e;
+        font-size: 1.15rem;
+        line-height: 1.6;
+      }
+      .card h2 {
+        margin-top: 0;
+        font-weight: 700;
+        font-size: 1.8rem;
+        color: #34495e;
+        margin-bottom: 12px;
+      }
+    </style>
+  </head>
+  <body style="background: url('{{ url_for('static', filename='images/medicine-capsules-global-health-with-geometric-pattern-digital-remix_53876-126742.jpg.avif') }}') no-repeat center center fixed; background-size: cover; min-height: 100vh;">
+
+    <header>
+      <h1>Pharmacy Management System</h1>
+      <nav>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('medicines') }}">Medicines</a>
+        <a href="{{ url_for('patients') }}">Patients</a>
+        <a href="{{ url_for('sales') }}">Sales</a>
+        <a href="{{ url_for('logout') }}">Logout ({{ session.username }})</a>
+      </nav>
+    </header>
+    <main>
+      <div class="stats">
+        <div class="stat">
+          <h3>Total Medicines</h3>
+          <p>{{ total_medicines }}</p>
+        </div>
+        <div class="stat">
+          <h3>Total Patients</h3>
+          <p>{{ total_patients }}</p>
+        </div>
+        <div class="stat">
+          <h3>Total Sales</h3>
+          <p>{{ total_sales }}</p>
+        </div>
+        <div class="stat">
+          <h3>Low Stock Medicines</h3>
+          <p>{{ low_stock }}</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Welcome, {{ session.username }}!</h2>
+        <p>
+          Use the navigation above to manage the pharmacy inventory, patients,
+          and sales.
+        </p>
+      </div>
+    </main>
+  </body>
+</html>

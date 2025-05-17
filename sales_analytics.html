@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sales Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Reset & base */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        padding: 30px;
+        background: #f0f4f8;
+        color: #2c3e50;
+        margin: 0;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 40px;
+        font-weight: 700;
+        color: #34495e;
+        letter-spacing: 1px;
+      }
+      /* Main container */
+      .container {
+        display: flex;
+        gap: 40px;
+        max-width: 1100px;
+        margin: 0 auto;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .chart-container,
+      .info-container {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        flex: 1 1 400px;
+        min-width: 320px;
+      }
+      .chart-container h2,
+      .info-container h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #34495e;
+        border-bottom: 3px solid #007bff;
+        padding-bottom: 8px;
+        font-weight: 700;
+      }
+      .info-container p {
+        font-size: 1.1rem;
+        margin: 15px 0;
+        line-height: 1.5;
+      }
+      strong {
+        color: #007bff;
+      }
+      /* Bottom button group */
+      .btn-group {
+        max-width: 1100px;
+        margin: 40px auto 0;
+        display: flex;
+        justify-content: flex-start;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      /* Back button */
+      .back-btn,
+      .export-btn {
+        padding: 12px 28px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        text-decoration: none;
+        text-align: center;
+        color: white;
+        display: inline-block;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        user-select: none;
+        min-width: 160px;
+      }
+      /* Back to dashboard button */
+      .back-btn {
+        background-color: #007bff;
+      }
+      .back-btn:hover {
+        background-color: #0056b3;
+        box-shadow: 0 6px 14px rgba(0, 86, 179, 0.5);
+      }
+      /* Export PDF button */
+      .export-btn {
+        background-color: #17a2b8;
+        box-shadow: 0 4px 10px rgba(23, 162, 184, 0.4);
+      }
+      .export-btn:hover {
+        background-color: #138496;
+        box-shadow: 0 6px 14px rgba(19, 132, 150, 0.6);
+      }
+      .btn-group {
+        max-width: 1100px;
+        margin: 40px auto 0;
+        display: flex;
+        justify-content: center; /* Center buttons horizontally */
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sales Analytics</h1>
+
+    <div class="container">
+      <div class="chart-container">
+        <h2>Profit Contribution (by Patient)</h2>
+        <canvas id="profitChart"></canvas>
+      </div>
+
+      <div class="info-container">
+        <h2>Insights</h2>
+        <p>
+          <strong>Most Frequent Patient:</strong> {{ most_frequent_patient[0] }}
+          ({{ most_frequent_patient[1] }} visits)
+        </p>
+        <p>
+          <strong>Top Profit-Contributing Patient:</strong>
+          {{ top_profit_patient[0] }} (₹{{ top_profit_patient[1] }})
+        </p>
+        <p>
+          <strong>Most Sold Medicine:</strong> {{ most_sold_medicine[0] }} ({{
+          most_sold_medicine[1] }} units)
+        </p>
+        <p>
+          <strong>Least Sold Medicine:</strong> {{ least_sold_medicine[0] }} ({{
+          least_sold_medicine[1] }} units)
+        </p>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a href="{{ url_for('dashboard') }}" class="back-btn"
+        >← Back to Dashboard</a
+      >
+      <button id="exportPdfBtn" class="export-btn">Export as PDF</button>
+    </div>
+
+    <script>
+      const ctx = document.getElementById('profitChart').getContext('2d');
+      const profitChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: {{ profit_data | map(attribute=0) | list | tojson }},
+          datasets: [{
+            label: 'Profit by Patient',
+            data: {{ profit_data | map(attribute=1) | list | tojson }},
+            backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6f42c1'],
+            hoverOffset: 30,
+            borderWidth: 2,
+            borderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                font: { size: 14 },
+                padding: 20
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.label + ': ₹' + context.parsed;
+                }
+              }
+            }
+          }
+        }
+      });
+
+      document.getElementById("exportPdfBtn").addEventListener("click", () => {
+        const chartImage = profitChart.toBase64Image();
+
+        const analyticsData = {
+          most_frequent_patient:
+            "{{ most_frequent_patient[0] }} ({{ most_frequent_patient[1] }})",
+          top_profit_patient:
+            "{{ top_profit_patient[0] }} (₹{{ top_profit_patient[1] }})",
+          most_sold_medicine:
+            "{{ most_sold_medicine[0] }} ({{ most_sold_medicine[1] }} units)",
+          least_sold_medicine:
+            "{{ least_sold_medicine[0] }} ({{ least_sold_medicine[1] }} units)",
+        };
+
+        fetch("/analytics/export/pdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chart: chartImage,
+            analytics: analyticsData,
+          }),
+        })
+        .then((response) => response.blob())
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "sales_analytics.pdf";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+        })
+        .catch((err) => alert("Failed to export PDF: " + err));
+      });
+    </script>
+  </body>
+</html>

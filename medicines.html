@@ -1,0 +1,264 @@
+<!-- templates/medicines.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Medicines - Pharmacy Management</title>
+    <style>
+      /* Base and reset */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f7fa;
+        padding: 30px 40px;
+        color: #34495e;
+        margin: 0;
+      }
+      header {
+        background: #1e90ff;
+        color: white;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      }
+      nav a {
+        color: white;
+        margin-left: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 6px 14px;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+      }
+      nav a:hover,
+      nav a:focus {
+        background-color: #1565c0;
+        outline: none;
+      }
+
+      h2 {
+        margin-top: 30px;
+        font-weight: 700;
+        font-size: 2rem;
+        letter-spacing: 0.05em;
+        color: #2c3e50;
+      }
+
+      form.add-medicine {
+        margin-top: 25px;
+        background: white;
+        padding: 25px 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      form.add-medicine input[type="text"],
+      form.add-medicine input[type="number"] {
+        padding: 12px;
+        width: 200px;
+        border: 1.8px solid #ccc;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+      form.add-medicine input[type="text"]:focus,
+      form.add-medicine input[type="number"]:focus {
+        border-color: #1e90ff;
+        outline: none;
+      }
+      form.add-medicine button {
+        padding: 12px 25px;
+        background-color: #1e90ff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      form.add-medicine button:hover {
+        background-color: #1565c0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      th,
+      td {
+        padding: 16px 20px;
+        border-bottom: 1px solid #e0e0e0;
+        text-align: left;
+        font-size: 1rem;
+      }
+      th {
+        background: #1e90ff;
+        color: white;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+      }
+      tbody tr:hover {
+        background-color: #f1f9ff;
+        cursor: default;
+      }
+      tr.low-stock {
+        background-color: #ffe5e5 !important;
+      }
+
+      .actions button {
+        margin-right: 8px;
+        padding: 8px 14px;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .actions button:hover {
+        background-color: #217dbb;
+      }
+      .actions a {
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body
+    style="background: url('{{ url_for('static', filename='images/medicine-capsules-global-health-with-geometric-pattern-digital-remix_53876-126742.jpg.avif') }}') no-repeat center center fixed; background-size: cover; min-height: 100vh;"
+  >
+    <header>
+      <h1>Pharmacy Management System</h1>
+      <nav>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('medicines') }}">Medicines</a>
+        <a href="{{ url_for('patients') }}">Patients</a>
+        <a href="{{ url_for('sales') }}">Sales</a>
+        <a href="{{ url_for('logout') }}">Logout ({{ session.username }})</a>
+      </nav>
+    </header>
+
+    <h2>Medicines Inventory</h2>
+
+<form
+  method="GET"
+  action="{{ url_for('medicines') }}"
+  style="
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 25px;
+    max-width: 400px;
+    margin-left: auto;
+  "
+>
+  <input
+    type="text"
+    name="search"
+    placeholder="Search medicine..."
+    value="{{ search }}"
+    style="
+      padding: 10px 15px;
+      border: 1.5px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 250px;
+      transition: border-color 0.3s ease;
+    "
+    onfocus="this.style.borderColor='#1e90ff'"
+    onblur="this.style.borderColor='#ccc'"
+  />
+  <button
+    type="submit"
+    style="
+      padding: 10px 22px;
+      background-color: #1e90ff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    "
+    onmouseover="this.style.backgroundColor='#1565c0'"
+    onmouseout="this.style.backgroundColor='#1e90ff'"
+  >
+    Search
+  </button>
+</form>
+
+
+
+    <form
+      method="POST"
+      action="{{ url_for('add_medicine') }}"
+      class="add-medicine"
+    >
+      <input type="text" name="name" placeholder="Medicine Name" required />
+      <input
+        type="number"
+        name="quantity"
+        placeholder="Quantity"
+        min="0"
+        required
+      />
+      <input
+        type="number"
+        step="0.01"
+        name="price"
+        placeholder="Price"
+        min="0"
+        required
+      />
+      <button type="submit">Add Medicine</button>
+      
+    </form>
+    
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Quantity</th>
+          <th>Price ($)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for med in medicines %}
+        <tr class="{{ 'low-stock' if med[2] < 10 else '' }}">
+          <td>{{ med[0] }}</td>
+          <td>{{ med[1] }}</td>
+          <td>{{ med[2] }}</td>
+          <td>{{ med[3] }}</td>
+          <td class="actions">
+            <a href="{{ url_for('edit_medicine', id=med[0]) }}"
+              ><button>Edit</button></a
+            >
+            <form action="{{ url_for('delete_medicine', id=med[0]) }}" method="POST" style="display:inline;">
+  <button type="submit" onclick="return confirm('Are you sure you want to delete this medicine?');">Delete</button>
+</form>
+
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

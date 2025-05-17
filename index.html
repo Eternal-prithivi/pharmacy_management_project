@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pharmacy Management System</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+      .low-stock {
+        background-color: #ffcccc;
+      }
+    </style>
+</head>
+<body>
+    <h1>Pharmacy Inventory</h1>
+
+    <!-- Search form -->
+    <form method="get" action="/">
+        <input type="text" name="search" placeholder="Search medicines..." value="{{ search_query }}">
+        <button type="submit">Search</button>
+        <a href="{{ url_for('index') }}">Clear</a>
+    </form>
+
+    <!-- Add Medicine form -->
+    <form action="/add" method="post" style="margin-top: 15px;">
+        <input type="text" name="name" placeholder="Medicine Name" required>
+        <input type="number" name="quantity" placeholder="Quantity" required min="0">
+        <input type="number" step="0.01" name="price" placeholder="Price" required min="0">
+        <button type="submit">Add Medicine</button>
+    </form>
+
+    <hr>
+
+    <!-- Download CSV button -->
+    <a href="{{ url_for('download') }}">
+      <button>Download Inventory CSV</button>
+    </a>
+
+    <!-- Medicines Table -->
+    <table border="1" cellpadding="10" style="margin-top: 15px; width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Price ($)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for med in medicines %}
+            <tr class="{{ 'low-stock' if med[2] < 10 else '' }}">
+                <td>{{ med[0] }}</td>
+                <td>{{ med[1] }}</td>
+                <td>{{ med[2] }}</td>
+                <td>{{ "%.2f"|format(med[3]) }}</td>
+                <td>
+                    <a href="{{ url_for('edit', id=med[0]) }}">Edit</a>
+                    <form action="{{ url_for('delete', id=med[0]) }}" method="post" style="display:inline;" onsubmit="return confirm('Delete this medicine?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align:center;">No medicines found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+
